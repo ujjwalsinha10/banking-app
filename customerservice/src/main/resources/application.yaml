@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: customerservice
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/customerdb
+    username: postgres
+    password: admin
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  sql:
+    init:
+      mode: always
+
+# Feign + logging configuration (correct placement)
+feign:
+  client:
+    config:
+      default:
+        loggerLevel: full
+
+logging:
+  level:
+    org.springframework.cloud.openfeign: DEBUG
+    feign: DEBUG
+
+#      docker run --name postgresql -e POSTGRES_PASSWORD=admin -p 5432:5432 -d postgres
