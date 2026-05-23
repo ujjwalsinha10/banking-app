@@ -1,6 +1,13 @@
 spring:
   application:
     name: customerservice
+  server:
+    port: 8083
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://dev-sreamtiash4qsy4h.us.auth0.com/
 
   datasource:
     url: jdbc:postgresql://localhost:5432/customerdb
@@ -12,10 +19,19 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
 
   sql:
     init:
       mode: always
+
+auth:
+  service:
+    url: http://localhost:8094/
+auth0:
+  audience: https://mockbank/api
 
 # Feign + logging configuration (correct placement)
 feign:
@@ -29,4 +45,5 @@ logging:
     org.springframework.cloud.openfeign: DEBUG
     feign: DEBUG
 
+#      sudo kill -9 $(sudo lsof -t -i :5432)
 #      docker run --name postgresql -e POSTGRES_PASSWORD=admin -p 5432:5432 -d postgres

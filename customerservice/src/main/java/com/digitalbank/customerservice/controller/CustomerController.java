@@ -6,6 +6,7 @@ import com.digitalbank.customerservice.service.CustomerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -29,6 +30,7 @@ public class CustomerController {
         return ResponseEntity.created(loc).body(body);
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_admin:users.write')")
     @PatchMapping("/customers/{id}/kyc-status")
     public ResponseEntity<Void> updateKycStatus(@PathVariable String id, @RequestBody UpdateKycStatusRequest request) {
         Integer newVersion = customerService.updateKycStatus(id, request.getKycStatus());

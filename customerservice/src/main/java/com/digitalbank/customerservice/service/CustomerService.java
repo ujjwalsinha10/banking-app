@@ -1,6 +1,7 @@
 package com.digitalbank.customerservice.service;
 
 import com.commons.exceptions.*;
+import com.digitalbank.customerservice.client.AuthServiceClient;
 import com.digitalbank.customerservice.dto.*;
 import com.digitalbank.customerservice.mapper.CustomerMapper;
 import com.digitalbank.customerservice.model.Customer;
@@ -17,7 +18,7 @@ import java.util.Optional;
 public class CustomerService {
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
-
+    private final AuthServiceClient authServiceClient;
 
     public CustomerCreatedResponse create(CustomerRequest request) {
         String externalId = request.getExternalId();
@@ -58,9 +59,9 @@ public class CustomerService {
 
 
         if ("VERIFIED".equalsIgnoreCase(kycStatus)) {
-//            CustomerRegistrationRequest request =
-//                    new CustomerRegistrationRequest(c.getEmail(), "default-password", c.getExternalId());
-//            authServiceClient.registerCustomer(request);
+            CustomerRegistrationRequest request =
+                    new CustomerRegistrationRequest(c.getEmail(), "default-password", c.getExternalId());
+            authServiceClient.registerCustomer(request);
             c.setKycStatus(KycStatus.VERIFIED);
             c.setActive(true);
             customerRepository.save(c);
