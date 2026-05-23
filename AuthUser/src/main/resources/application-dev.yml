@@ -1,0 +1,29 @@
+server:
+  port: 8094
+
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://dev-sreamtiash4qsy4h.us.auth0.com/
+  application:
+    name: auth-user
+
+logging:
+  level:
+    root: INFO
+    com.authuser: DEBUG
+    org.springframework.security: DEBUG
+
+consent:
+  service:
+    url: http://localhost:8096/api/v1
+
+auth0:
+  domain: https://dev-sreamtiash4qsy4h.us.auth0.com
+  audience: https://mockbank/api
+  mgmt:
+    client-id: SY6SsSJToMNB8Kns6GF3kNXH1tJXPILU
+    client-secret: sSVBNLCJS_oLyufIQuJXkjW4GUMfi-ujLgtP_Ct52bu5ytJBGQzPNJYmTI89hwVK
+    audience: https://dev-sreamtiash4qsy4h.us.auth0.com/api/v2/
