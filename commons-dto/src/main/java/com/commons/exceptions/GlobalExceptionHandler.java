@@ -1,30 +1,23 @@
 package com.commons.exceptions;
 
-import java.util.List;
-import java.util.ArrayList;
-
+import com.commons.dto.ErrorResponse;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-//import org.springframework.security.access.AccessDeniedException;
-//import org.springframework.security.core.AuthenticationException;
-
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 
-import org.springframework.validation.FieldError;
-
-import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.ValidationException;
-
-import com.commons.dto.ErrorResponse;
+import java.util.List;
 
 /**
  * Centralized error mapping to your commons-dto envelope.
@@ -44,12 +37,12 @@ public class GlobalExceptionHandler {
     }
 
 
-//    @ExceptionHandler(AuthenticationException.class)
-//    public ResponseEntity<ErrorResponse> handleAuthenticationException(AuthenticationException ex) {
-//        log.debug("AuthenticationException: {}", ex.getMessage());
-//        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-//                .body(err("INVALID_JWT", "The provided JWT token is invalid or expired", ex.getMessage()));
-//    }
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErrorResponse> handleAuthenticationException(AuthenticationException ex) {
+        log.debug("AuthenticationException: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(err("INVALID_JWT", "The provided JWT token is invalid or expired", ex.getMessage()));
+    }
 
     @ExceptionHandler(JwtAuthenticationException.class)
     public ResponseEntity<ErrorResponse> handleJwtAuthenticationException(JwtAuthenticationException ex) {
@@ -58,12 +51,12 @@ public class GlobalExceptionHandler {
                 .body(err("INVALID_CREDS", ex.getMessage(), ex.getMessage()));
     }
 
-//    @ExceptionHandler(AccessDeniedException.class)
-//    public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex) {
-//        log.debug("AccessDeniedException: {}", ex.getMessage());
-//        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-//                .body(err("FORBIDDEN", "Forbidden", ex.getMessage()));
-//    }
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex) {
+        log.debug("AccessDeniedException: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(err("FORBIDDEN", "Forbidden", ex.getMessage()));
+    }
 
 
     // ---------- Domain Not Found ----------

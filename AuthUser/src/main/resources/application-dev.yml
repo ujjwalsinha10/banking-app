@@ -24,6 +24,6 @@ auth0:
   domain: https://dev-sreamtiash4qsy4h.us.auth0.com
   audience: https://mockbank/api
   mgmt:
-    client-id: SY6SsSJToMNB8Kns6GF3kNXH1tJXPILU
-    client-secret: sSVBNLCJS_oLyufIQuJXkjW4GUMfi-ujLgtP_Ct52bu5ytJBGQzPNJYmTI89hwVK
+    client-id: XXXXXXX
+    client-secret: XXXXXX
     audience: https://dev-sreamtiash4qsy4h.us.auth0.com/api/v2/
