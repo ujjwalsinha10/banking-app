@@ -1,0 +1,391 @@
+openapi: 3.0.3
+
+info:
+  title: Transaction Service API
+  version: 1.0.0
+  description: APIs for retrieving account transactions and transaction details.
+
+servers:
+  - url: http://localhost:8080
+    description: Local Development Server
+
+tags:
+  - name: Transactions
+    description: APIs related to account transactions
+
+paths:
+
+  /api/v1/accounts/{accountId}/transactions:
+    get:
+      tags:
+        - Transactions
+
+      summary: Get transactions by account
+      description: Retrieve paginated transactions for a specific account.
+
+      operationId: getTransactionsByAccount
+
+      security:
+        - bearerAuth: [ ]
+
+      parameters:
+
+        - name: accountId
+          in: path
+          required: true
+          description: Unique account identifier
+          schema:
+            type: string
+            format: uuid
+            example: "550e8400-e29b-41d4-a716-446655440000"
+
+        - name: startDate
+          in: query
+          required: false
+          description: Fetch transactions from this timestamp
+          schema:
+            type: string
+            format: date-time
+            example: "2026-01-01T00:00:00Z"
+
+        - name: endDate
+          in: query
+          required: false
+          description: Fetch transactions until this timestamp
+          schema:
+            type: string
+            format: date-time
+            example: "2026-01-31T23:59:59Z"
+
+        - name: limit
+          in: query
+          required: false
+          description: Maximum number of transactions to return
+          schema:
+            type: integer
+            default: 5
+            minimum: 1
+            example: 10
+
+        - name: offset
+          in: query
+          required: false
+          description: Pagination offset
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+            example: 0
+
+        - name: type
+          in: query
+          required: false
+          description: Filter by transaction type
+          schema:
+            type: string
+            example: "DEBIT"
+
+      responses:
+
+        '200':
+          description: Transactions retrieved successfully
+
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TransactionResponse'
+
+              examples:
+                success:
+                  summary: Successful response
+                  value:
+                    - transactionId: "6f4b1f2f-5e1b-4e6d-9b5a-123456789abc"
+                      accountId: "550e8400-e29b-41d4-a716-446655440000"
+                      amount: 1200.50
+                      currency: "USD"
+                      type: "DEBIT"
+                      description: "Amazon Purchase"
+                      merchant: "Amazon"
+                      transactionDate: "2026-01-15T10:30:00Z"
+                      status: "COMPLETED"
+
+                    - transactionId: "8b7c2d4e-7a2f-45f6-99fa-abcdef123456"
+                      accountId: "550e8400-e29b-41d4-a716-446655440000"
+                      amount: 5000.00
+                      currency: "USD"
+                      type: "CREDIT"
+                      description: "Salary Credit"
+                      merchant: "Acme Corp"
+                      transactionDate: "2026-01-10T08:00:00Z"
+                      status: "COMPLETED"
+
+        '400':
+          description: Validation error
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+              example:
+                error:
+                  code: "VALIDATION_ERROR"
+                  message: "Input validation failed"
+                  details: "limit must be greater than 0"
+
+        '401':
+          description: Unauthorized
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+              example:
+                error:
+                  code: "INVALID_JWT"
+                  message: "The provided JWT token is invalid or expired"
+                  details: "JWT expired"
+
+        '403':
+          description: Forbidden
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+              example:
+                error:
+                  code: "FORBIDDEN"
+                  message: "Forbidden"
+                  details: "Access denied"
+
+        '404':
+          description: Account not found
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+              example:
+                error:
+                  code: "ACCOUNT_NOT_FOUND"
+                  message: "The account ID does not exist"
+                  details: "Account not found for id 550e8400-e29b-41d4-a716-446655440000"
+
+        '500':
+          description: Internal server error
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+              example:
+                error:
+                  code: "INTERNAL_ERROR"
+                  message: "Something went wrong"
+                  details: "Unexpected server error"
+
+  /api/v1/transactions/{transactionId}:
+    get:
+      tags:
+        - Transactions
+
+      summary: Get transaction by ID
+      description: Retrieve a transaction using its transaction ID.
+
+      operationId: getTransactionById
+
+      security:
+        - bearerAuth: [ ]
+
+      parameters:
+
+        - name: transactionId
+          in: path
+          required: true
+          description: Unique transaction identifier
+          schema:
+            type: string
+            format: uuid
+            example: "6f4b1f2f-5e1b-4e6d-9b5a-123456789abc"
+
+      responses:
+
+        '200':
+          description: Transaction retrieved successfully
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponse'
+
+              example:
+                transactionId: "6f4b1f2f-5e1b-4e6d-9b5a-123456789abc"
+                accountId: "550e8400-e29b-41d4-a716-446655440000"
+                amount: 1200.50
+                currency: "USD"
+                type: "DEBIT"
+                description: "Amazon Purchase"
+                merchant: "Amazon"
+                transactionDate: "2026-01-15T10:30:00Z"
+                status: "COMPLETED"
+
+        '400':
+          description: Validation error
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+              example:
+                error:
+                  code: "VALIDATION_ERROR"
+                  message: "Invalid transaction ID"
+                  details: "transactionId must be a valid UUID"
+
+        '401':
+          description: Unauthorized
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+              example:
+                error:
+                  code: "INVALID_JWT"
+                  message: "The provided JWT token is invalid or expired"
+                  details: "JWT expired"
+
+        '403':
+          description: Forbidden
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+              example:
+                error:
+                  code: "FORBIDDEN"
+                  message: "Forbidden"
+                  details: "Access denied"
+
+        '404':
+          description: Transaction not found
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+              example:
+                error:
+                  code: "NOT_FOUND"
+                  message: "Resource not found"
+                  details: "Transaction not found"
+
+        '500':
+          description: Internal server error
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+              example:
+                error:
+                  code: "INTERNAL_ERROR"
+                  message: "Something went wrong"
+                  details: "Unexpected server error"
+
+components:
+
+  securitySchemes:
+
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+
+    TransactionResponse:
+      type: object
+
+      properties:
+
+        transactionId:
+          type: string
+          format: uuid
+          example: "6f4b1f2f-5e1b-4e6d-9b5a-123456789abc"
+
+        accountId:
+          type: string
+          format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440000"
+
+        amount:
+          type: number
+          format: double
+          example: 1200.50
+
+        currency:
+          type: string
+          example: "USD"
+
+        type:
+          type: string
+          example: "DEBIT"
+
+        description:
+          type: string
+          example: "Amazon Purchase"
+
+        merchant:
+          type: string
+          example: "Amazon"
+
+        transactionDate:
+          type: string
+          format: date-time
+          example: "2026-01-15T10:30:00Z"
+
+        status:
+          type: string
+          example: "COMPLETED"
+
+    ErrorResponse:
+      type: object
+
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorDetail'
+
+    ErrorDetail:
+      type: object
+
+      properties:
+
+        code:
+          type: string
+          example: "VALIDATION_ERROR"
+
+        message:
+          type: string
+          example: "Input validation failed"
+
+        details:
+          type: string
+          example: "field=limit | limit must be greater than 0"
+
+      required:
+        - code
+        - message
