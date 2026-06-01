@@ -1,0 +1,271 @@
+openapi: 3.0.3
+
+info:
+  title: Biller Service API
+  version: 1.0.0
+  description: API for managing customer billers.
+
+servers:
+  - url: http://localhost:8080
+
+tags:
+  - name: Billers
+    description: Customer biller management APIs
+
+paths:
+
+  /api/v1/billers:
+
+    post:
+      tags:
+        - Billers
+      summary: Create a biller
+      operationId: createBiller
+
+      security:
+        - bearerAuth: [fdx:bill.write]
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BillerRequest'
+
+      responses:
+        '201':
+          description: Biller created successfully
+          headers:
+            Location:
+              description: Location of created biller
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BillerResponse'
+
+        '400':
+          description: Invalid request
+
+        '401':
+          description: Unauthorized
+
+        '403':
+          description: Forbidden
+
+    get:
+      tags:
+        - Billers
+      summary: List billers
+      operationId: listBillers
+
+      security:
+        - bearerAuth: [fdx:bill.read]
+
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
+
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 0
+
+      responses:
+        '200':
+          description: List of billers
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageResponseBillerResponse'
+
+        '401':
+          description: Unauthorized
+
+        '403':
+          description: Forbidden
+
+  /api/v1/billers/{id}:
+
+    get:
+      tags:
+        - Billers
+      summary: Get biller by ID
+      operationId: getBiller
+
+      security:
+        - bearerAuth: [fdx:bill.read]
+
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+
+      responses:
+        '200':
+          description: Biller details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BillerResponse'
+
+        '404':
+          description: Biller not found
+
+        '401':
+          description: Unauthorized
+
+        '403':
+          description: Forbidden
+
+    delete:
+      tags:
+        - Billers
+      summary: Delete biller
+      operationId: deleteBiller
+
+      security:
+        - bearerAuth: [fdx:bill.write]
+
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+
+      responses:
+        '204':
+          description: Biller deleted successfully
+
+        '404':
+          description: Biller not found
+
+        '401':
+          description: Unauthorized
+
+        '403':
+          description: Forbidden
+
+  /api/v1/billers/{refNum}/active:
+
+    get:
+      tags:
+        - Billers
+      summary: Check if biller is active
+      operationId: isBillerActive
+
+      security:
+        - bearerAuth: [fdx:bill.read]
+
+      parameters:
+        - name: refNum
+          in: path
+          required: true
+          schema:
+            type: string
+
+      responses:
+        '200':
+          description: Active status
+          content:
+            application/json:
+              schema:
+                type: boolean
+                example: true
+
+        '401':
+          description: Unauthorized
+
+        '403':
+          description: Forbidden
+
+components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+
+    BillerRequest:
+      type: object
+      required:
+        - refNum
+        - billerName
+
+      properties:
+        refNum:
+          type: string
+          example: ELEC-123456
+
+        billerName:
+          type: string
+          example: Karnataka Electricity Board
+
+        nickname:
+          type: string
+          example: Home Electricity
+
+    BillerResponse:
+      type: object
+
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+
+        refNum:
+          type: string
+          example: ELEC-123456
+
+        billerName:
+          type: string
+          example: Karnataka Electricity Board
+
+        nickname:
+          type: string
+          example: Home Electricity
+
+        active:
+          type: boolean
+          example: true
+
+        createdAt:
+          type: string
+          format: date-time
+
+    PageResponseBillerResponse:
+      type: object
+
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BillerResponse'
+
+        limit:
+          type: integer
+          example: 10
+
+        offset:
+          type: integer
+          example: 0
+
+        total:
+          type: integer
+          example: 25
