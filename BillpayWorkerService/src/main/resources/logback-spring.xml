@@ -1,0 +1,11 @@
+<configuration>
+
+    <include resource="logback-base.xml"/>
+
+    <logger name="com.zaxxer.hikari.pool.HikariPool" level="ERROR"/>
+    <logger name="org.springframework.cloud.openfeign" level="DEBUG"/>
+    <logger name="feign" level="DEBUG"/>
+
+    <root level="INFO"/>
+
+</configuration>
